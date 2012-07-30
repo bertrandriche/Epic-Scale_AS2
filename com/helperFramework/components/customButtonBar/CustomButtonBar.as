@@ -1,10 +1,18 @@
+/**
+ * Creates a button bar, holding multiple buttons on a single line.
+ * 
+ * Methods :
+	 * addButton : adds a new button to the bar
+	 * getButton : retrieves a specified button
+	 * clear : clears all data & removes the buttons from the bar
+ * 
+ * @author bertrandr@funcom.com
+ */
+
 import gfx.controls.Button;
 import com.helperFramework.components.customButtonBar.CustomButtonBarEntry
 import com.helperFramework.utils.Relegate;
-/**
- * ...
- * @author bertrandr@funcom.com
- */
+
 class com.helperFramework.components.customButtonBar.CustomButtonBar {
 	
 	private var _container:MovieClip;

@@ -1,11 +1,12 @@
+/**
+ * Places a listener on the mouse wheel, and fires the appropriate callback function whenever the mouse wheel is scrolled.
+ * @author bertrandr@funcom.com
+ */
+
 import com.helperFramework.events.MouseEvent;
 import com.helperFramework.utils.Relegate;
 import gfx.events.EventDispatcher;
 
-/**
- * ...
- * @author bertrandr@funcom.com
- */
 class com.helperFramework.utils.MouseWheelListener {
 	
 	private var _mouseWheelListener:Object;

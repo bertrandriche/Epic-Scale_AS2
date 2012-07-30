@@ -1,6 +1,6 @@
 import gfx.controls.Button;
 /**
- * ...
+ * Used with the Popup class. Stores the data of a choice.
  * @author bertrandr@funcom.com
  */
 class com.helperFramework.components.popup.PopupChoiceData {

@@ -1,5 +1,5 @@
 /**
- * ...
+ * Utility class to convert seconds to other usable formats.
  * @author bertrandr@funcom.com
  */
 class com.helperFramework.utils.DateUtils{
@@ -15,6 +15,11 @@ class com.helperFramework.utils.DateUtils{
 		return duration;
 	}
 	
+	/**
+	 * Converts a number of seconds into an Array or Numbers from seconds to weeks. Seconds will always be the last value in the Array.
+	 * @param	seconds
+	 * @return			An Array able to contain from weeks to seconds. Empty values will not be returned (ex : if weeks = 0 and days = 0, the Array will contain only hours, minutes & seconds).
+	 */
 	static public function formatTime(seconds:Number):Array {
 		var times:Array = new Array(5);
 		times[0] = Math.floor(seconds / 86400 / 7); // weeks

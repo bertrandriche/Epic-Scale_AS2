@@ -1,12 +1,15 @@
+/**
+ * Class made to ease the manipulation of a window in the game engine.
+ * Makes a extensive use of the WindowWatcher class to allow double sided communication between a global wrapper like this one and more specialized classes that holds a window logic.
+ * 
+ * @author bertrandr@funcom.com
+ */
+
 import com.greensock.TweenLite;
-import com.helperFramework.events.MouseEvent;
 import com.helperFramework.events.WindowWatcherEvent;
 import com.helperFramework.utils.Relegate;
 import com.helperFramework.utils.WindowWatcher;
-/**
- * ...
- * @author bertrandr@funcom.com
- */
+
 class com.helperFramework.display.SimpleGUIWindow {
 	
 	private var _flash:MovieClip;

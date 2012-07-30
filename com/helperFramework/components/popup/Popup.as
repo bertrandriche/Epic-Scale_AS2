@@ -1,17 +1,27 @@
+/**
+ * Creates a visual popup to display warning or messages to the user. The popups supports an non-predefined number of choices for the user to click on (buttons displaying text) and the message can be as a text (displayed in a textfield) or a MovieClip to be able to display images & advances layout.
+ * 
+ * Methods :
+	 * createContent : adds to the Popup the content that must be displayed to the user. Can be a text or a MovieClip
+	 * addChoice : adds a new choice to display to the user (as a button to click on)
+	 * clearChoices : remove all choices given to the user
+	 * show & hide : displays or hides the popup
+ * 
+ * Properties :
+	 * popupName (read-only) : a String representing the popup, for an easier targetting & identification of a popup (when multiple popups for example).
+ * 
+ * @author bertrandr@funcom.com
+ */
+
 import com.greensock.TweenLite;
+import com.helperFramework.components.popup.PopupChoiceData;
+import com.helperFramework.events.StatusEvent;
+import com.helperFramework.utils.Relegate;
 import gfx.controls.Button;
-import gfx.core.UIComponent;
 import gfx.events.EventDispatcher;
 import gfx.managers.InputDelegate;
 import gfx.ui.InputDetails;
-import com.helperFramework.components.popup.PopupChoiceData
-import com.helperFramework.events.StatusEvent;
-import com.helperFramework.utils.Logger;
-import com.helperFramework.utils.Relegate;
-/**
- * ...
- * @author bertrandr@funcom.com
- */
+
 class com.helperFramework.components.popup.Popup extends EventDispatcher {
 	
 	public static var CHOICE_OK:String = "OK";
@@ -40,7 +50,16 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 	private var _modalBlocker:MovieClip;
 	private var _closeOnClickOutside:Boolean;
 	
-	
+	/**
+	 * Creates a new popup. The content & choices must be added separately.
+	 * @param	container					A MovieClip that will hold all of the popup's elements.
+	 * @param	width						The width of the popup, in pixels.
+	 * @param	height						The height of the popup, in pixels.
+	 * @param	isModal					A boolean defining if the user can interact with the other elements displayed under the popup while its opened or not. Setting this to true adds a modal blocker to the stage preventing the user to interact with any other item on Stage.
+	 * @param	screenWidth				The total width of the stage the Popup is displayed on, for centering & having the modal blocker to cover all the Stage.
+	 * @param	screenHeight				The total height of the stage the Popup is displayed on, for centering & having the modal blocker to cover all the Stage.
+	 * @param	closeOnClickOutside		If the popup must close itself when the user clicks outside of it.
+	 */
 	public function Popup(container:MovieClip, width:Number, height:Number, isModal:Boolean, screenWidth:Number, screenHeight:Number, closeOnClickOutside:Boolean) {
 		_totalWidth = width;
 		_totalHeight = height;
@@ -94,7 +113,11 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 		dispatchEvent(new StatusEvent(StatusEvent.CLOSE));
 	}
 	
-	
+	/**
+	 * Creates the content of the popup. If the defined type is or Popup.CONTENT_TYPE_MOVIECLIP, a library item with a linkage ID of contentType parameter will be added to the popup.
+	 * @param	contentType			String defining the type of content to display. Must be either equal to Popup.CONTENT_TYPE_TEXT or Popup.CONTENT_TYPE_MOVIECLIP. 
+	 * @param	newContent				The actual content. Either a text if contentType == Popup.CONTENT_TYPE_TEXT or a library linkage ID if contentType == Popup.CONTENT_TYPE_MOVIECLIP.
+	 */
 	public function createContent(contentType:String, newContent:String):Void {
 		if (_content != null) _content.removeMovieClip();
 		
@@ -122,6 +145,13 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 		
 	}
 	
+	/**
+	 * Adds a new choice for the user to click on (adds a new button).
+	 * @param	choiceType				The type of the choice to add. Can be of anything bust works best with the Popup.CHOICE_OK & Popup.CHOICE_CANCEL types.
+	 * @param	choiceLabel			The text to display in the new button
+	 * @param	result					The called function when the button is pressed
+	 * @param	buttonWidth			The width of the button to add
+	 */
 	public function addChoice(choiceType:String, choiceLabel:String, result:Function, buttonWidth:Number):Void {
 		var newChoice:Button = Button(_choicesContainer.attachMovie("Button", "choice" + _choices.length, _choicesContainer.getNextHighestDepth()));
 		newChoice.width = buttonWidth;
@@ -137,6 +167,9 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 		_placeChoices();
 	}
 	
+	/**
+	 * Removes all the choices from the popup.
+	 */
 	public function clearChoices():Void {
 		
 		var oldChoice:Button;
@@ -153,6 +186,10 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 		_choices = [];
 	}
 	
+	/**
+	 * Displays the popup
+	 * @param	popupName			A string representing the new popup's name
+	 */
 	public function show(popupName:String):Void {
 		_popupName = popupName;
 		
@@ -169,20 +206,21 @@ class com.helperFramework.components.popup.Popup extends EventDispatcher {
 			_modalBlocker._y = -_container._y;
 			
 			_modalBlocker._visible = true;
-			//TweenLite.to(_modalBlocker, 0.3, { _alpha:60 } );
 		}
 		
 		Selection.setFocus(_content);
 		InputDelegate.instance.addEventListener("input", Relegate.create(this, _handleInput));
 	}
 	
+	/**
+	 * Hides the popup
+	 */
 	public function hide():Void {
 		TweenLite.to(_popup, 0.3, { _alpha:0 } );
 		TweenLite.to(_container, 0.3, { _xscale:90, _yscale:90 } );
 		
 		if (_isModal) {
 			_modalBlocker._visible = false;
-			//TweenLite.to(_modalBlocker, 0.3, { _alpha:0, onComplete:Relegate.create(this, _hideModalBlocker) } );
 		}
 		
 		Selection.setFocus(null);

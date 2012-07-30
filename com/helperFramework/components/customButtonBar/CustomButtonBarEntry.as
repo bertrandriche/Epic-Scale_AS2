@@ -1,8 +1,10 @@
-import gfx.controls.Button;
 /**
- * ...
+ * Used in the CustomButtonBar class for holding buttons data.
  * @author bertrandr@funcom.com
  */
+
+import gfx.controls.Button;
+ 
 class com.helperFramework.components.customButtonBar.CustomButtonBarEntry {
 	
 	private var _uid:Number;

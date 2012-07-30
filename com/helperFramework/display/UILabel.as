@@ -1,5 +1,5 @@
 /**
- * ...
+ * Wrapper for a simple Textfield. Used to simplify Textfield manipulation in AS2.
  * @author bertrandr@funcom.com
  */
 class com.helperFramework.display.UILabel {

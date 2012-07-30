@@ -1,10 +1,10 @@
-import flash.geom.ColorTransform;
-import com.helperFramework.utils.Logger;
-import com.GameInterface.Utils;
 /**
  * ...
  * @author bertrandr@funcom.com
  */
+
+ import com.GameInterface.Utils;
+ 
 class com.helperFramework.display.SkinnedWindow {
 	
 	private var _skin:MovieClip;

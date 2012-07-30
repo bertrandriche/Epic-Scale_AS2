@@ -1,28 +1,55 @@
+/**
+ * List-type component that allow categorization of its elements. 
+ * This component is used to display elements under the form of a list, but sorted in categories, each category being visually separated from the others by a header, and using a folding-unfolding behavior to emphasize categories.
+ * All items in the categories will be casted as CategorizedListItemRenderer for internal manipulations, thus the linkage ID for the itemsRenderersName provided in the list's contructor should correspond to an item extending CategorizedListItemRenderer.
+ * 
+ * Properties :
+	 * verticalSpacingBeforeHeader : amount in pixels of vertical space BEFORE each header of the list
+	 * verticalSpacingAfterHeader : amount in pixels of vertical space AFTER each header of the list
+	 * itemsVerticalSpacing : amount in pixels of vertical space between each item within a category
+	 * scrollDistance : amount in pixels of vertical movement when the mouse wheel is scrolled down or up
+	 * autoScrollDistance : Boolean defining if the scrollDistance must be automatically defined, based on the items height, or not.
+	 * smoothedAnimations : Boolean defining if all animations must be smoothed (using TweenLite / TweenMax tween engine) or not (using instant properties setting).
+	 * itemsCategoryProperty : String defining the property name of each item in the list to specify its category
+	 * itemsCategoryLabelProperty : String defining the property of each item in the list to specify its category label
+	 * categoriesLabelName : the name of the textfield in the headers MovieClip to display the category label
+ * 
+ * Methods :
+	 * show & hide : methods to show or hide the list
+	 * populate : populates the list with the supplied data
+	 * unpopulate : clears the list from all its categories, items and data
+	 * removeElement : removes a single item from a category
+	 * unselect : unselects the currently selected item
+	 * scrollTo : makes the list scroll to a defined vertical position
+	 * focusOn : method to make a specified category open and the other ones close.
+ * 
+ * Events :
+	 * CategorizedListEvent.SELECTION_CHANGE : fired whenever the current selected item changes.
+ * 
+ * @author bertrandr@funcom.com
+ */
+
+import com.greensock.TweenLite;
 import com.helperFramework.components.categorizedList.CategorizedListEvent;
 import com.helperFramework.components.categorizedList.CategorizedListItemRenderer;
 import com.helperFramework.components.categorizedList.CategoryData;
 import com.helperFramework.components.categorizedList.CategoryView;
-import com.greensock.TweenLite;
 import com.helperFramework.events.MouseEvent;
 import com.helperFramework.events.StatusEvent;
 import com.helperFramework.utils.ArrayUtils;
 import com.helperFramework.utils.Relegate;
 import gfx.controls.ScrollBar;
 import gfx.events.EventDispatcher;
-/**
- * ...
- * @author bertrandr@funcom.com
- */
+
 class com.helperFramework.components.categorizedList.CategorizedList extends EventDispatcher {
 	
 	public var itemsTypesPadding:Number = 5;
-	private var _smoothedAnimations:Boolean = true;
 	
 	public var verticalSpacingBeforeHeader:Number = 10;
 	public var verticalSpacingAfterHeader:Number = 3;
 	public var itemsVerticalSpacing:Number = 0;
-	public var autoScrollDistance:Boolean = true;
 	public var scrollDistance:Number = 5;
+	public var autoScrollDistance:Boolean = true;
 	
 	private var _itemsRenderersName:String;
 	private var _categoriesRenderersName:String;
@@ -46,9 +73,19 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	private var _scrollBar:ScrollBar;
 	private var _scrollPosition:Number = 0;
 	private var _scrollableDistance:Number;
+	private var _smoothedAnimations:Boolean = true;
 	
 	private var _selectedElement:CategorizedListItemRenderer;
 	
+	/**
+	 * Creates a new categorized list component. The totalWidth & totalHeight parameters are used to draw a mask on the list for it to display only on the selected zone.
+	 * @param	container						MovieClip container for all the list elements
+	 * @param	itemsRenderersName			String containing the Library linkage name of the list items (should be an item extending CategorizedListItemRenderer or at least having an ID property).
+	 * @param	categoriesRenderersName		String containing the Library linkage name of the categories headers
+	 * @param	totalWidth						Total width of the list in pixels
+	 * @param	totalHeight					Total height of the list in pixels
+	 * @param	scrollBarOn					Boolean defining if a scrollbar must be used on the list or not
+	 */
 	public function CategorizedList(container:MovieClip, itemsRenderersName:String, categoriesRenderersName:String, totalWidth:Number, totalHeight:Number, scrollBarOn:Boolean) {
 		_content = container;
 		_categoriesRenderersName = categoriesRenderersName;
@@ -66,7 +103,10 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 		_contentContainer.setMask(_contentMask);
 	}
 	
-	
+	/**
+	 * Makes the list focus on a specifid category
+	 * @param	catID			The ID number of the category (array index beginning at 0)
+	 */
 	public function focusOn(catID:Number):Void {
 		for (var i:Number = 0; i < _numCategories; i++) {
 			if (i != catID) _categoriesViews[i].fold();
@@ -80,6 +120,11 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	******************************* SHOW / HIDE ******************************
 	**************************************************************************/
 	
+	/**
+	 * Makes the list appears.
+	 * @param	animated			If there should be an animation or not
+	 * @param	endCallBack		Function called when the animation is ended
+	 */
 	public function show(animated:Boolean, endCallBack:Function):Void {
 		if (animated == null || animated == undefined) animated = false;
 		if (animated) {
@@ -92,6 +137,11 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 		
 	}
 	
+	/**
+	 * Makes the list disappears.
+	 * @param	animated			If there should be an animation or not
+	 * @param	endCallBack		Function called when the animation is ended
+	 */
 	public function hide(animated:Boolean, endCallBack:Function):Void {
 		if (animated == null || animated == undefined) animated = false;
 		if (animated) {
@@ -109,6 +159,10 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	************************ POPULATION & UNPOPULATION ***********************
 	**************************************************************************/
 	
+	/**
+	 * Populates the list with the supplied data. All data item must contain itemsCategoryProperty (default "category", can be user defined, see corresponding class property) and itemsCategoryLabelProperty (default "categoryLabel", can be user defined, see corresponding class property) properties for the list to correctly parse them out and sort them in the correct categories.
+	 * @param	data			Array of data objects.
+	 */
 	public function populate(data:Array):Void {
 		
 		_content._alpha = 0;
@@ -155,7 +209,11 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	}
 	
 	
-	
+	/**
+	 * Removes a single item from the list, in the specified category if there's one. If no category is given, will try to find a corresponding category and will remove from it. If the item does not exist in any category, nothing will happens.
+	 * @param	itemToRemove			The ID of the element to remove
+	 * @param	targetCategory			The ID of the category the item should be in.
+	 */
 	public function removeElement(itemToRemove:Number, targetCategory:String):Void {
 		var categoryData:CategoryData;
 		if (targetCategory == null || targetCategory == undefined || targetCategory == "") {
@@ -198,8 +256,9 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	}
 	
 	
-	
-	
+	/**
+	 * Unpopulates the list.
+	 */
 	public function unpopulate():Void {
 		
 		for (var i:Number = 0; i < _numCategories; i++) {
@@ -248,6 +307,9 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 		_selectedElement = null;
 	}
 	
+	/**
+	 * Unselect the currently selecte item, if there's one.
+	 */
 	public function unselect():Void {
 		_unselectCurrentElement();
 	}
@@ -270,7 +332,6 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 			categoryView.setHeader(categoryView.headerContainer.attachMovie(_categoriesRenderersName, "header", categoryView.headerContainer.getNextHighestDepth()));
 			categoryView.setHeaderContent(_categoriesLabelName, _categories[i].label);
 			categoryView.addEventListener(StatusEvent.CHANGE, Relegate.create(this, _onCategoryChange));
-			//categoryView.header._width = _totalWidth - itemsTypesPadding;
 			categoryView.setWidth(_totalWidth - itemsTypesPadding);
 			
 			_categoriesViews[i] = categoryView;
@@ -383,6 +444,10 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 		_scrollTo(newPosition);
 	}
 	
+	/**
+	 * Makes the list scroll from a specified distance (can be negative).
+	 * @param	distance			Distance in pixel the list will scroll by. Any negative number will make the list scrolls from bottom to top.
+	 */
 	public function scrollTo(distance:Number):Void {
 		if (_scrollableDistance < _totalHeight) return;
 		
@@ -464,6 +529,9 @@ class com.helperFramework.components.categorizedList.CategorizedList extends Eve
 	****************************** DESTRUCTION *******************************
 	**************************************************************************/
 	
+	/**
+	 * Upopulate & destroys the list.
+	 */
 	public function destroy():Void {
 		unpopulate();
 	}

@@ -1,5 +1,5 @@
 /**
- * ...
+ * Utility class for Functions related methods.
  * @author bertrandr@funcom.com
  */
 class com.helperFramework.utils.FunctionUtils {

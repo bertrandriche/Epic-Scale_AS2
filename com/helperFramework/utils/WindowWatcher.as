@@ -1,9 +1,16 @@
-import gfx.events.EventDispatcher;
-import com.helperFramework.events.WindowWatcherEvent;
 /**
- * ...
+ * WindowWatcher is a singleton class to draw the bridge between classes and their mother in the non-existent AS2 display list.
+ * 
+ * The WindowWatcher consists of a "collection of Singletons" of WindowWatcher, that must be targeted with a unique name, each name referring to a different instance of WindowWatcher.
+ * 
+ * All the classes calling WindowWatcher.getInstance while providing the same name identifier will have access to the same instance.
+ * 
  * @author bertrandr@funcom.com
  */
+
+import gfx.events.EventDispatcher;
+import com.helperFramework.events.WindowWatcherEvent;
+
 class com.helperFramework.utils.WindowWatcher extends EventDispatcher {
 	
 	static private var _instances:Array/*WindowWatcher*/;

@@ -1,12 +1,14 @@
+/**
+ * Category view of a category in a CategorizedList.
+ * @author bertrandr@funcom.com
+ */
+
 import com.greensock.TweenLite;
 import com.helperFramework.components.categorizedList.CategorizedListItemRenderer;
 import com.helperFramework.events.StatusEvent;
 import com.helperFramework.utils.Relegate;
 import gfx.events.EventDispatcher;
-/**
- * ...
- * @author bertrandr@funcom.com
- */
+ 
 class com.helperFramework.components.categorizedList.CategoryView extends EventDispatcher {
 	
 	public static var HEADER_FOLDING_INDICATOR_NAME:String = "arrow";
@@ -31,7 +33,14 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 	private var _itemsContainer:MovieClip;
 	private var _headerContainer:MovieClip;
 	
-	
+	/**
+	 * Constructor
+	 * @param	id						The ID of the category
+	 * @param	container				A MovieClip for holding all the category's header & items
+	 * @param	afterHeaderPadding	Amount in pixels of vertical spacing between the header & the items
+	 * @param	verticalPadding		Amount in pixels of vertical spacing between every item
+	 * @param	animationsOn			Boolean indicating if the transitions should be animated or not (using TweenMax tween engine or just instantly setting properties).
+	 */
 	public function CategoryView(id:Number, container:MovieClip, afterHeaderPadding:Number, verticalPadding:Number, animationsOn:Boolean) {
 		_id = id;
 		_content = container;
@@ -46,6 +55,10 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		_items = [];
 	}
 	
+	/**
+	 * Sets the category header
+	 * @param	header			The MovieClip used as the category header.
+	 */
 	public function setHeader(header:MovieClip):Void {
 		if (_header != null) _header.removeMovieClip();
 		_header = header;
@@ -62,7 +75,10 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		else fold();
 	}
 	
-	
+	/**
+	 * Adds a new item to the category view
+	 * @param	newItem			The MovieClip used as the new item display
+	 */
 	public function addItem(newItem:MovieClip):Void {
 		_items[_numItems] = newItem;
 		_numItems++;
@@ -77,6 +93,9 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		_internalHeight = _totalHeight;
 	}
 	
+	/**
+	 * Folds the category, hiding all of its items and only displaying the header.
+	 */
 	public function fold():Void {
 		_folded = true;
 		
@@ -97,7 +116,9 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		_itemsContainer._visible = visibility;
 	}
 	
-	
+	/**
+	 * Unfolds the category, displaying all of its items
+	 */
 	public function unfold():Void {
 		_folded = false;
 		
@@ -116,6 +137,9 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		dispatchEvent(new StatusEvent(StatusEvent.CHANGE));
 	}
 	
+	/**
+	 * Destroys the category, removing all of its items & header
+	 */
 	public function destroy():Void {
 		_header.removeMovieClip();
 		
@@ -127,10 +151,20 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		_content.removeMovieClip();
 	}
 	
+	/**
+	 * Sets the header content
+	 * @param	labelName			The name of the textfield to use as a label displayer
+	 * @param	text				The text to display in the textfield
+	 */
 	public function setHeaderContent(labelName:String, text:String):Void {
 		_header[labelName].text = text;
 	}
 	
+	/**
+	 * Removes a specific item from the category
+	 * @param	itemToRemove		The ID of the element to remove
+	 * @return		CategorizedListItemRenderer 			The removed renderer
+	 */
 	public function removeItem(itemToRemove:Number):CategorizedListItemRenderer {
 		var removedItem:CategorizedListItemRenderer;
 		for (var i:Number = 0; i < _numItems; i++) {
@@ -145,6 +179,9 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		return removedItem;
 	}
 	
+	/**
+	 * Updates the vertical placement of all the items of the category.
+	 */
 	public function updateItemsPlacement():Void {
 		_totalHeight = _header._height + _afterHeaderPadding;
 		
@@ -168,6 +205,10 @@ class com.helperFramework.components.categorizedList.CategoryView extends EventD
 		_internalHeight = _totalHeight;
 	}
 	
+	/**
+	 * Sets the total width of the category
+	 * @param	newWidth		The new width
+	 */
 	public function setWidth(newWidth:Number):Void {
 		if (smoothedAnimations) {
 			TweenLite.to(_header[BG_NAME], 0.1, { _width: newWidth } );
